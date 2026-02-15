@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTX Clinic - Dr. Orlando</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI, sans-serif;
+  background:#111;
+  color:#00ff88;
+}
+header{
+  padding:20px;
+  text-align:center;
+  border-bottom:1px solid #00ff88;
+}
+section{
+  padding:20px;
+}
+.card{
+  background:#1a1a1a;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:12px;
+  border:1px solid #00ff88;
+}
+button{
+  background:#00ff88;
+  color:#111;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+input, textarea{
+  width:100%;
+  margin-top:5px;
+  margin-bottom:10px;
+  padding:6px;
+  border-radius:6px;
+  border:none;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h2>Dr. Orlando Abreu Gomes da Silva</h2>
+<p>Fundador da BTX Tech</p>
+<p>📞 91999873835 | 91992980333</p>
+<p>📧 orlandodentista@outlook.com</p>
+</header>
+
+<section>
+<div class="card">
+<h3>Agenda</h3>
+<input id="patientName" placeholder="Nome do paciente">
+<textarea id="note" placeholder="Observação"></textarea>
+<button onclick="saveAppointment()">Salvar</button>
+</div>
+
+<div class="card">
+<h3>Lista de Pacientes</h3>
+<div id="list"></div>
+</div>
+</section>
+
+<script>
+if('serviceWorker' in navigator){
+ navigator.serviceWorker.register('sw.js');
+}
+
+function saveAppointment(){
+ let name=document.getElementById('patientName').value;
+ let note=document.getElementById('note').value;
+ if(!name)return alert('Digite o nome');
+ let data=JSON.parse(localStorage.getItem('agenda')||'[]');
+ data.push({name,note});
+ localStorage.setItem('agenda',JSON.stringify(data));
+ render();
+}
+
+function render(){
+ let data=JSON.parse(localStorage.getItem('agenda')||'[]');
+ let list=document.getElementById('list');
+ list.innerHTML='';
+ data.forEach(p=>{
+   list.innerHTML+=`<p><strong>${p.name}</strong> - ${p.note}</p>`;
+ });
+}
+
+render();
+</script>
+
+</body>
+</html>
