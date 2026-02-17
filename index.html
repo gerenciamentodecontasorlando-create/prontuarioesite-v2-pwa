@@ -388,7 +388,7 @@
           <div class="logoMark">BTX</div>
           <div>
             <h1>BTX Clinic</h1>
-            <small>Software clínico offline • agenda • prontuário • odontograma • documentos A4</small>
+            <small>Software clínico offline • agenda • prontuário • documentos A4</small>
           </div>
         </div>
         <div class="pill"><span class="dot"></span> <span>Modo offline • instalável (PWA)</span></div>
@@ -472,7 +472,6 @@
         <div class="grid two">
           <div class="pill">📅 Agenda com contagem por dia</div>
           <div class="pill">👤 Pacientes + ficha clínica (auto-salvamento)</div>
-          <div class="pill">🦷 Odontograma funcional</div>
           <div class="pill">🧾 Receita / atestado / orçamento (A4)</div>
         </div>
         <div class="hr"></div>
@@ -511,7 +510,6 @@
           <button class="active" data-view="dash">⚡ Dashboard</button>
           <button data-view="agenda">📅 Agenda</button>
           <button data-view="patients">👤 Pacientes / Ficha</button>
-          <button data-view="odontogram">🦷 Odontograma</button>
           <button data-view="docs">🧾 Documentos (A4)</button>
           <button data-view="backup">💾 Backup</button>
           <button data-view="settings">⚙️ Configurações</button>
@@ -648,27 +646,7 @@
                 <div class="hr"></div>
 
                 <div class="row">
-                  <button class="btn" id="btnGoOdonto">Abrir odontograma</button>
-                  <button class="btn" id="btnGoDocs">Gerar documentos</button>
-                  <button class="btn danger" id="btnDeletePatient">Excluir paciente</button>
-                </div>
 
-                <div class="muted" style="font-size:12px; margin-top:10px;">
-                  Tudo salva ao digitar.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="view_odontogram" class="view" style="display:none;">
-          <div class="panel">
-            <h3>Odontograma</h3>
-            <div class="grid two">
-              <div class="field"><label>Paciente</label><select id="odoPatient"></select></div>
-              <div class="row" style="align-self:end;">
-                <span class="pill">Clique no dente: <strong style="color:var(--accent)">OK</strong> → <strong style="color:var(--warn)">Atenção</strong> → <strong style="color:var(--bad)">Problema</strong> → Neutro</span>
-              </div>
             </div>
 
             <div class="hr"></div>
@@ -678,24 +656,6 @@
                 <h3>Mapa (simplificado)</h3>
                 <div class="teeth" id="teethGrid"></div>
               </div>
-
-              <div class="panel">
-                <h3>Legenda / Nota</h3>
-                <div class="grid">
-                  <div class="pill"><span class="dot"></span> OK / restaurado</div>
-                  <div class="pill" style="border-color: rgba(255,204,102,.25);">🟡 Atenção</div>
-                  <div class="pill" style="border-color: rgba(255,92,122,.25);">🔴 Problema</div>
-                </div>
-
-                <div class="sp"></div>
-                <div class="field"><label>Observação do odontograma</label><textarea id="odoNote"></textarea></div>
-
-                <div class="row">
-                  <button class="btn ghost" id="btnClearOdo">Limpar odontograma</button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div id="view_docs" class="view" style="display:none;">
@@ -1118,7 +1078,7 @@
       document.querySelectorAll(".view").forEach(v=>v.style.display="none");
       const el=document.getElementById("view_"+name);
       if(el) el.style.display="block";
-      const titles={dash:"Dashboard",agenda:"Agenda",patients:"Pacientes / Ficha",odontogram:"Odontograma",docs:"Documentos (A4)",backup:"Backup",settings:"Configurações"};
+      const titles={dash:"Dashboard",agenda:"Agenda",patients:"Pacientes / Ficha",docs:"Documentos (A4)",backup:"Backup",settings:"Configurações"};
       viewTitle.textContent=titles[name]||"BTX Clinic";
       if(name==="agenda") renderAgenda();
       if(name==="patients") renderPatients();
@@ -1550,22 +1510,9 @@
             </div>
           </div>`;
       }).join("");
-
-      teethGrid.querySelectorAll(".tooth").forEach(card=>{
-        card.addEventListener("click", ()=>{
-          odoToggle(pid, card.dataset.tooth);
-          renderOdontogram();
-          toast("Odontograma atualizado ✅");
         });
       });
-
-      odoNote.value=o.note||"";
-    }
-
-    odoPatient.addEventListener("change", ()=>{
-      renderOdontogram();
-      docPatient.value=odoPatient.value;
-      currentPatientId=odoPatient.value||null;
+;
     });
 
     odoNote.addEventListener("input", ()=>{
@@ -1573,16 +1520,6 @@
       if(!pid) return;
       odoGet(pid).note=odoNote.value;
       saveDB(false);
-    });
-
-    btnClearOdo.addEventListener("click", ()=>{
-      const pid=odoPatient.value;
-      if(!pid) return;
-      if(!confirm("Limpar odontograma deste paciente?")) return;
-      DB.odontograms[pid]={map:{},note:""};
-      saveDB(false);
-      renderOdontogram();
-      toast("Odontograma limpo.");
     });
 
     // Docs
